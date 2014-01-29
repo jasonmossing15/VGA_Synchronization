@@ -60,24 +60,26 @@ begin
 	process(reset, clk)
 	begin
 		if (reset = '1') then
-			count_reg <= "0";
+			count_reg <= to_unsigned(0,11);
 		elsif (clk'event and clk = '1') then
 			if (state_reg = state_next) then
 				count_reg <= count_next;
 			else
-				count_reg <= "0";
+				count_reg <= to_unsigned(0,11);
 			end if;
 		end if;
 	end process;
 	
 	--Next count logic
-	process(count_reg)
+	process(count_reg, clk)
 	begin
-		count_next <= count_reg + 1;
+		if (clk = '1') then
+		count_next <= count_reg + to_unsigned(1,11);
+		end if;
 	end process;
 	
 	-- Next State logic
-	process(state_reg)
+	process(state_reg, clk)
 	begin
 		case state_reg is
 			when active_video =>
@@ -110,15 +112,17 @@ begin
 	end process;
 	
 	--output logic
-	process (state_reg)
+	process (state_reg, count_reg)
 	begin
 		h_sync <= '1';
 		blank <= '1';
 		completed <= '0';
+		column <= to_unsigned(0,11);
 		
 		case state_reg is
 			when active_video =>
 				blank <= '0';
+				column <= count_reg;
 			when front_porch =>
 			when sync_pulse =>
 				h_sync <= '0';
@@ -127,8 +131,5 @@ begin
 				completed <= '1';
 		end case;
 	end process;
-				
-			
 
 end Behavioral;
-
