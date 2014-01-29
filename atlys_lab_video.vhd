@@ -1,9 +1,9 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
+-- Company: ECE383
+-- Engineer: Jason Mossing
 -- 
 -- Create Date:    15:22:52 01/28/2014 
--- Design Name: 
+-- Design Name: 	 VGA Synchronization
 -- Module Name:    atlys_lab_video - mossing 
 -- Project Name: 
 -- Target Devices: 
@@ -29,15 +29,6 @@ use IEEE.NUMERIC_STD.ALL;
 library UNISIM;
 use UNISIM.VComponents.all;
 
-entity h_sync_gen is
-    port ( clk       : in  std_logic;
-           reset     : in  std_logic;
-           h_sync    : out std_logic;
-           blank     : out std_logic;
-           completed : out std_logic;
-           column    : out unsigned(10 downto 0)
-     );
-end h_sync_gen;
 
 entity v_sync_gen is
     port ( clk         : in  std_logic;
