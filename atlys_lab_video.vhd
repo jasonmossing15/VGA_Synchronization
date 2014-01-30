@@ -30,27 +30,14 @@ library UNISIM;
 use UNISIM.VComponents.all;
 
 
-
-entity vga_sync is
-    port ( clk         : in  std_logic;
-           reset       : in  std_logic;
-           h_sync      : out std_logic;
-           v_sync      : out std_logic;
-           v_completed : out std_logic;
-           blank       : out std_logic;
-           row         : out unsigned(10 downto 0);
-           column      : out unsigned(10 downto 0)
-     );
-end vga_sync;
-
-entity pixel_gen is
-    port ( row      : in unsigned(10 downto 0);
-           column   : in unsigned(10 downto 0);
-           blank    : in std_logic;
-           r        : out std_logic_vector(7 downto 0);
-           g        : out std_logic_vector(7 downto 0);
-           b        : out std_logic_vector(7 downto 0));
-end pixel_gen;
+--entity pixel_gen is
+--    port ( row      : in unsigned(10 downto 0);
+--           column   : in unsigned(10 downto 0);
+--           blank    : in std_logic;
+--           r        : out std_logic_vector(7 downto 0);
+--           g        : out std_logic_vector(7 downto 0);
+--           b        : out std_logic_vector(7 downto 0));
+--end pixel_gen;
 
 entity atlys_lab_video is
     port ( 
@@ -60,12 +47,23 @@ entity atlys_lab_video is
              tmdsb : out std_logic_vector(3 downto 0)
          );
 end atlys_lab_video;
--- TODO: Include requied libraries and packages
---       Don't forget about `unisim` and its `vcomponents` package.
+
 -- TODO: Entity declaration (as shown on previous page)
 
 architecture mossing of atlys_lab_video is
-    -- TODO: Signals, as needed
+    component vga_sync
+		    Port ( clk : in  STD_LOGIC;
+           reset : in  STD_LOGIC;
+           h_sync : out  STD_LOGIC;
+           v_sync : out  STD_LOGIC;
+           v_completed : out  STD_LOGIC;
+           blank : out  STD_LOGIC;
+           row : out  unsigned(10 downto 0);
+           column : out  unsigned(10 downto 0));
+	end component;
+	 
+	 signal row_sig, column_sig : unsigned(10 downto 0);
+	 signal blank_sig, h_sync_sig, v_syn_sig : std_logic;
 begin
 
     -- Clock divider - creates pixel clock from 100MHz clock
@@ -96,6 +94,16 @@ begin
             );
 
     -- TODO: VGA component instantiation
+	 vga : vga_sync
+		port map(
+			clk => clk,
+         reset => reset,
+         h_sync => h_sync_sig,
+         v_sync => v_sync_sig,
+         v_completed => open,
+         blank => blank_sig,
+         row => row_sig,
+         column => column_sig);
     -- TODO: Pixel generator component instantiation
 
     -- Convert VGA signals to HDMI (actually, DVID ... but close enough)
@@ -108,8 +116,8 @@ begin
                 green_p   => green,
                 blue_p    => blue,
                 blank     => blank,
-                hsync     => h_sync,
-                vsync     => v_sync,
+                hsync     => h_sync_sig,
+                vsync     => v_sync_sig,
                 -- outputs to TMDS drivers
                 red_s     => red_s,
                 green_s   => green_s,
