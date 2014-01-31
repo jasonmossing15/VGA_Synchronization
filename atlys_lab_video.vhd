@@ -30,15 +30,6 @@ library UNISIM;
 use UNISIM.VComponents.all;
 
 
---entity pixel_gen is
---    port ( row      : in unsigned(10 downto 0);
---           column   : in unsigned(10 downto 0);
---           blank    : in std_logic;
---           r        : out std_logic_vector(7 downto 0);
---           g        : out std_logic_vector(7 downto 0);
---           b        : out std_logic_vector(7 downto 0));
---end pixel_gen;
-
 entity atlys_lab_video is
     port ( 
              clk   : in  std_logic; -- 100 MHz
@@ -61,9 +52,19 @@ architecture mossing of atlys_lab_video is
            row : out  unsigned(10 downto 0);
            column : out  unsigned(10 downto 0));
 	end component;
+	
+	component pixel_gen
+    port ( row      : in unsigned(10 downto 0);
+           column   : in unsigned(10 downto 0);
+           blank    : in std_logic;
+           r        : out std_logic_vector(7 downto 0);
+           g        : out std_logic_vector(7 downto 0);
+           b        : out std_logic_vector(7 downto 0));
+	end component;
 	 
 	 signal row_sig, column_sig : unsigned(10 downto 0);
-	 signal blank_sig, h_sync_sig, v_syn_sig : std_logic;
+	 signal blank_sig, h_sync_sig, v_sync_sig, clock_s, blue_s, green_s, red_s, serialize_clk_n, serialize_clk, pixel_clk : std_logic;
+	 signal red, green, blue : std_logic_vector(7 downto 0);
 begin
 
     -- Clock divider - creates pixel clock from 100MHz clock
@@ -104,8 +105,17 @@ begin
          blank => blank_sig,
          row => row_sig,
          column => column_sig);
-    -- TODO: Pixel generator component instantiation
 
+    -- TODO: Pixel generator component instantiation
+		pix_gen : pixel_gen
+			port map ( 
+				row => row_sig,
+				column => column_sig,
+				blank  => blank_sig,
+				r => red,
+				g => green,
+				b => blue
+				);
     -- Convert VGA signals to HDMI (actually, DVID ... but close enough)
     inst_dvid: entity work.dvid
     port map(
@@ -115,7 +125,7 @@ begin
                 red_p     => red,
                 green_p   => green,
                 blue_p    => blue,
-                blank     => blank,
+                blank     => blank_sig,
                 hsync     => h_sync_sig,
                 vsync     => v_sync_sig,
                 -- outputs to TMDS drivers
