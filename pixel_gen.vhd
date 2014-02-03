@@ -42,6 +42,9 @@ architecture Behavioral of pixel_gen is
 
 begin
 
+	r <= 	"00000000" when blank = '1' else
+			"11111111";
+	g <=	"00000000";
+	b <=	"00000000";
 
 end Behavioral;
-

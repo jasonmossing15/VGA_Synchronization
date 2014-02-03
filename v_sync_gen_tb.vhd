@@ -64,7 +64,7 @@ ARCHITECTURE behavior OF v_sync_gen_tb IS
    signal row : unsigned(10 downto 0);
 
    -- Clock period definitions
-   constant clk_period : time := 10 ns;
+   constant clk_period : time := 40 ns;
  
 BEGIN
  
@@ -87,48 +87,53 @@ BEGIN
 		clk <= '1';
 		wait for clk_period/2;
    end process;
+
+   h_process :process
+   begin
+		h_completed<= '0';
+		wait for clk_period * 799;
+		h_completed <= '1';
+		wait for clk_period;
+   end process;
  
 
    -- Stimulus process
    stim_proc: process
    begin		
-      -- hold reset state for 100 ns.
-      wait for 100 ns;	
-
 		reset <= '1';
-		h_completed <= '0'; 
 		wait for clk_period*4;
-		assert ((row = to_unsigned(0,11)) and (blank = '0') and (v_sync = '1') and (completed = '0'))
-		report "reset doesnt work";
 		
 		reset <= '0';
-		h_completed <= '0'; 
-		wait for clk_period*10;
-		assert ((row = to_unsigned(0,11)) and (blank = '0') and (v_sync = '1') and (completed = '0'))
-		report "h_complete doesnt work";
 		
-		h_completed <= '1'; 
-		wait for clk_period*301;
-		assert ((row = to_unsigned(300,11)) and (blank = '0') and (v_sync = '1') and (completed = '0'))
-		report "active at 300 doesnt work";
-		
-		wait for clk_period*185;
-		assert ((row = to_unsigned(0,11)) and (blank = '1') and (v_sync = '1') and (completed = '0'))
-		report "front porch doesnt work";
-		
-		wait for clk_period*6;
-		assert ((row = to_unsigned(0,11)) and (blank = '1') and (v_sync = '0') and (completed = '0'))
-		report "sync pulse doesnt work";
-		
-		wait for clk_period*4;
-		assert ((row = to_unsigned(0,11)) and (blank = '1') and (v_sync = '1') and (completed = '0'))
-		report "back porch doesnt work";
-		
-		wait for clk_period*31;
-		assert ((row = to_unsigned(0,11)) and (blank = '1') and (v_sync = '1') and (completed = '1'))
-		report "completed signal doesnt work";
-		
-      wait for clk_period*10;
+--		assert ((row = to_unsigned(0,11)) and (blank = '0') and (v_sync = '1') and (completed = '0'))
+--		report "reset doesnt work";
+--		
+--		reset <= '0';
+--		h_completed <= '0'; 
+--		wait for clk_period*10;
+--		assert ((row = to_unsigned(0,11)) and (blank = '0') and (v_sync = '1') and (completed = '0'))
+--		report "h_complete doesnt work";
+--		
+--		assert ((row = to_unsigned(300,11)) and (blank = '0') and (v_sync = '1') and (completed = '0'))
+--		report "active at 300 doesnt work";
+--		
+--		wait for clk_period*185;
+--		assert ((row = to_unsigned(0,11)) and (blank = '1') and (v_sync = '1') and (completed = '0'))
+--		report "front porch doesnt work";
+--		
+--		wait for clk_period*6;
+--		assert ((row = to_unsigned(0,11)) and (blank = '1') and (v_sync = '0') and (completed = '0'))
+--		report "sync pulse doesnt work";
+--		
+--		wait for clk_period*4;
+--		assert ((row = to_unsigned(0,11)) and (blank = '1') and (v_sync = '1') and (completed = '0'))
+--		report "back porch doesnt work";
+--		
+--		wait for clk_period*31;
+--		assert ((row = to_unsigned(0,11)) and (blank = '1') and (v_sync = '1') and (completed = '1'))
+--		report "completed signal doesnt work";
+--		
+--      wait for clk_period*10;
 
       -- insert stimulus here 
 

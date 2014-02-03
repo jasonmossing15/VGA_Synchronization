@@ -81,7 +81,7 @@ begin
 			completed => v_completed,
 			row => row);
 
-blank <= (h_blank and v_blank);
+blank <= (h_blank or v_blank);
 
 end Behavioral;
 

@@ -58,33 +58,34 @@ begin
 	end process;
 	
 	-- Count State Register
-	process(reset, clk, count_next)
+	process(reset, clk)
 	begin
 		if (reset = '1') then
 			count_reg <= to_unsigned(0,11);
 		elsif (clk'event and clk = '1') then
-			if (state_reg = state_next) then
-				count_reg <= count_next;
-			else
-				count_reg <= to_unsigned(0,11);
-			end if;
+			count_reg <= count_next;
 		end if;
 	end process;
 	
-	--Next count logic
-	process(count_reg, clk, h_completed)
+	process(state_reg, state_next, h_completed, count_reg)
 	begin
-		if (clk = '1') then 
-			if (h_completed = '1') then
-				count_next <= count_reg + to_unsigned(1,11);
+		if (state_reg = state_next) then
+			if(h_completed = '1' and clk = '1') then
+				count_next <= count_reg + 1;
 			else
 				count_next <= count_reg;
 			end if;
+		else
+			count_next <= (others => '0');
 		end if;
 	end process;
-	
+--	
+--	count_next <= 	(others => '0') when state_reg /= state_next else
+--						count_reg + 1 when h_completed = '1' else
+--						count_reg;
+--	
 	-- Next State logic
-	process(state_reg, clk, count_next)
+	process(state_reg, clk, count_reg, count_next)
 	begin
 		case state_reg is
 			when active_video =>
@@ -94,19 +95,19 @@ begin
 					state_next <= front_porch;
 				end if;
 			when front_porch =>
-				if (count_next < 10) then
+				if (count_reg < 10) then
 					state_next <= front_porch;
 				else
 					state_next <= sync_pulse;
 				end if;
 			when sync_pulse =>
-				if (count_next < 2) then
+				if (count_reg < 2) then
 					state_next <= sync_pulse;
 				else
 					state_next <= back_porch;
 				end if;
 			when back_porch =>
-				if (count_next < 33) then
+				if (count_reg < 33) then
 					state_next <= back_porch;
 				else
 					state_next <= complete;

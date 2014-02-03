@@ -39,7 +39,6 @@ entity atlys_lab_video is
          );
 end atlys_lab_video;
 
--- TODO: Entity declaration (as shown on previous page)
 
 architecture mossing of atlys_lab_video is
     component vga_sync
@@ -94,7 +93,7 @@ begin
                 clkfx180 => serialize_clk_n
             );
 
-    -- TODO: VGA component instantiation
+    -- VGA component instantiation
 	 vga : vga_sync
 		port map(
 			clk => clk,
@@ -106,7 +105,7 @@ begin
          row => row_sig,
          column => column_sig);
 
-    -- TODO: Pixel generator component instantiation
+    -- Pixel generator component instantiation
 		pix_gen : pixel_gen
 			port map ( 
 				row => row_sig,
@@ -146,4 +145,3 @@ begin
         ( O  => TMDS(3), OB => TMDSB(3), I  => clock_s );
 
 end mossing;
-
