@@ -41,10 +41,25 @@ end pixel_gen;
 architecture Behavioral of pixel_gen is
 
 begin
-
-	r <= 	"00000000" when blank = '1' else
-			"11111111";
-	g <=	"00000000";
-	b <=	"00000000";
+	
+	process (blank, row, column)
+	begin
+		r <= 	"00000000";
+		g <=	"00000000";
+		b <=	"00000000";
+		
+		if (blank = '0') then
+			if (row > 350) then
+				r <= "11111111";
+			elsif (column < 213) then
+				g <= "11111111";
+			elsif (column < 427) then
+				b <= "11111111";
+			else
+				r <= "11111111";
+				g <= "11111111";
+			end if;
+		end if;
+	end process;
 
 end Behavioral;
