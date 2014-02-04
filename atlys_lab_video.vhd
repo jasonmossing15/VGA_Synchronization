@@ -96,7 +96,7 @@ begin
     -- VGA component instantiation
 	 vga : vga_sync
 		port map(
-			clk => clk,
+			clk => pixel_clk,
          reset => reset,
          h_sync => h_sync_sig,
          v_sync => v_sync_sig,

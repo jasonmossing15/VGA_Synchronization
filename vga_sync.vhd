@@ -84,4 +84,3 @@ begin
 blank <= (h_blank or v_blank);
 
 end Behavioral;
-

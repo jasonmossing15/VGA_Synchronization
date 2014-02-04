@@ -41,9 +41,40 @@ end h_sync_gen;
 architecture Behavioral of h_sync_gen is
 	type h_states is (active_video, front_porch, sync_pulse, back_porch, complete);
 	signal state_reg, state_next : h_states;
-	signal count_reg, count_next : unsigned(10 downto 0);
+	signal count_reg, count_next, column_next, column_reg : unsigned(10 downto 0);
+	signal h_sync_next, blank_next, completed_next : std_logic;
+	signal h_sync_reg, blank_reg, completed_reg : std_logic;
 	
 begin
+--	
+--	count_next <= count_reg + 1;
+--	
+--	--	process(reset, clk)
+--	begin
+--		if (reset = '1') then
+--			state_reg <= active_video;
+--			count_reg <= to_unsigned(0,11);
+--		elsif (clk'event and clk = '1') then
+--			state_reg <= state_next;
+--			count_reg <= count_next;
+--		end if;
+--	end process;
+--	
+--	process (count_reg)
+--	begin
+--		h_sync <= '1';
+--		blank <= '1';
+--		completed <= '0';
+--		column <= to_unsigned(0,11);
+--		
+--		if (count_reg < 640) then
+--			blank <= '0';
+--			column <= count_reg;
+--		elsif (count_reg < (640+16)) then
+--		elsif (count_reg < (640+16+96)) then
+--			h_sync <= '0';
+--		elsif
+			
 	
 	--State Register
 	process(reset, clk)
@@ -55,45 +86,40 @@ begin
 		end if;
 	end process;
 	
+
 	-- Count State Register
 	process(reset, clk)
 	begin
 		if (reset = '1') then
-			count_reg <= to_unsigned(0,11);
-		elsif (clk'event and clk = '1') then
+			count_reg <= (others => '0');
+		elsif rising_edge(clk) then
 			count_reg <= count_next;
 		end if;
 	end process;
 	
-	count_next <= (others => '0') when state_reg /= state_next else
-						count_reg + 1;
+	count_next <= count_reg + 1 when state_reg = state_next else
+						(others => '0');
 	
 	-- Next State logic
-	process(state_reg, clk, count_next, count_reg)
+	process(state_reg, count_reg)
 	begin
+		state_next <= state_reg;
+	
 		case state_reg is
 			when active_video =>
-				if (count_reg < 639) then
-					state_next <= active_video;
-				else
+				if (count_reg = 639) then
 					state_next <= front_porch;
 				end if;
 			when front_porch =>
-				if (count_reg < 15) then
-					state_next <= front_porch;
-				else
+				if (count_reg = 15) then
 					state_next <= sync_pulse;
 				end if;
 			when sync_pulse =>
-				if (count_reg < 95) then
-					state_next <= sync_pulse;
-				else
+				if (count_reg = 95) then
 					state_next <= back_porch;
 				end if;
 			when back_porch =>
-				if (count_reg < 46) then
-					state_next <= back_porch;
-				else
+				if (count_reg = 46) then
 					state_next <= complete;
 				end if;
 			when complete =>
@@ -102,24 +128,39 @@ begin
 	end process;
 	
 	--output logic
-	process (state_reg, count_reg)
+	process (state_next, count_next)
 	begin
-		h_sync <= '1';
-		blank <= '1';
-		completed <= '0';
-		column <= to_unsigned(0,11);
+		h_sync_next <= '1';
+		blank_next <= '1';
+		completed_next <= '0';
+		column_next <= (others => '0');
 		
-		case state_reg is
+		case state_next is
 			when active_video =>
-				blank <= '0';
-				column <= count_reg;
+				blank_next <= '0';
+				column_next <= count_next;
 			when front_porch =>
 			when sync_pulse =>
-				h_sync <= '0';
+				h_sync_next <= '0';
 			when back_porch =>
 			when complete =>
-				completed <= '1';
+				completed_next <= '1';
 		end case;
 	end process;
 
+	process (clk)
+	begin
+		if rising_edge(clk) then
+			h_sync_reg <= h_sync_next;
+			blank_reg <= blank_next;
+			completed_reg <= completed_next;
+			column_reg <= column_next;
+		end if;
+	end process;
+	
+	h_sync <= h_sync_reg;
+	blank <= blank_reg;
+	completed <= completed_reg;
+	column <= column_reg;
+	
 end Behavioral;
