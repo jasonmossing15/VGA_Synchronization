@@ -44,6 +44,16 @@ end atlys_lab_video;
 
 architecture mossing of atlys_lab_video is
     component vga_sync
+			Generic (
+				H_activeSize : natural;
+				H_frontSize : natural;
+				H_syncSize : natural;
+				H_backSize : natural;
+				V_activeSize : natural;
+				V_frontSize : natural;
+				V_syncSize : natural;
+				V_backSize : natural
+				);
 		    Port ( clk : in  STD_LOGIC;
            reset : in  STD_LOGIC;
            h_sync : out  STD_LOGIC;
@@ -99,6 +109,16 @@ begin
 
     -- VGA component instantiation
 	 vga : vga_sync
+	 	 Generic map (
+		H_activeSize => 640,
+		H_frontSize => 16,
+		H_syncSize => 96,
+		H_backSize => 48,
+		V_activeSize => 480,
+		V_frontSize => 10,
+		V_syncSize => 2,
+		V_backSize => 33
+		)
 		port map(
 			clk => pixel_clk,
          reset => reset,

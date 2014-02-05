@@ -30,6 +30,16 @@ library UNISIM;
 use UNISIM.VComponents.all;
 
 entity vga_sync is
+	 Generic (
+		H_activeSize : natural;
+		H_frontSize : natural;
+		H_syncSize : natural;
+		H_backSize : natural;
+		V_activeSize : natural;
+		V_frontSize : natural;
+		V_syncSize : natural;
+		V_backSize : natural
+		);
     Port ( clk : in  STD_LOGIC;
            reset : in  STD_LOGIC;
            h_sync : out  STD_LOGIC;
@@ -42,6 +52,12 @@ end vga_sync;
 
 architecture Behavioral of vga_sync is
 	component h_sync_gen
+		Generic (
+			activeSize : natural;
+			frontSize : natural;
+			syncSize : natural;
+			backSize : natural
+			);
 	    Port ( clk : in  STD_LOGIC;
            reset : in  STD_LOGIC;
            h_sync : out  STD_LOGIC;
@@ -51,6 +67,12 @@ architecture Behavioral of vga_sync is
 	end component;
 	
 	component v_sync_gen
+		 Generic (
+			activeSize : natural;
+			frontSize : natural;
+			syncSize : natural;
+			backSize : natural
+			);
 	    Port ( clk : in  STD_LOGIC;
            reset : in  STD_LOGIC;
            h_completed : in  STD_LOGIC;
@@ -63,6 +85,12 @@ architecture Behavioral of vga_sync is
 begin
 
 	h_sync_gen1 : h_sync_gen
+		generic map(
+			activeSize => H_activeSize,
+			frontSize => H_frontSize,
+			syncSize => H_syncSize,
+			backSize => H_backSize
+			)
 		port map (
 			clk => clk,
 			reset => reset,
@@ -72,6 +100,12 @@ begin
 			column => column);
 	
 	v_sync_gen1 : v_sync_gen
+			generic map(
+			activeSize => V_activeSize,
+			frontSize => V_frontSize,
+			syncSize => V_syncSize,
+			backSize => V_backSize
+			)
 		port map(
 			clk => clk,
 			reset => reset,
