@@ -33,6 +33,8 @@ entity pixel_gen is
     Port ( row : in  unsigned(10 downto 0);
            column : in  unsigned(10 downto 0);
            blank : in  STD_LOGIC;
+				switch1 : in std_logic;
+				switch2 : in std_logic;
            r : out  STD_LOGIC_VECTOR (7 downto 0);
            g : out  STD_LOGIC_VECTOR (7 downto 0);
            b : out  STD_LOGIC_VECTOR (7 downto 0));
@@ -42,22 +44,64 @@ architecture Behavioral of pixel_gen is
 
 begin
 	
-	process (blank, row, column)
+	process (blank, row, column, switch1, switch2)
 	begin
 		r <= 	"00000000";
 		g <=	"00000000";
 		b <=	"00000000";
 		
 		if (blank = '0') then
-			if (row > 350) then
-				r <= "11111111";
-			elsif (column < 213) then
-				g <= "11111111";
-			elsif (column < 427) then
-				b <= "11111111";
-			else
-				r <= "11111111";
-				g <= "11111111";
+			if (switch1 = '0' and switch2 = '0') then 
+				if (row > 350) then
+					r <= "11111111";
+				elsif (column < 213) then
+					g <= "11111111";
+				elsif (column < 427) then
+					b <= "11111111";
+				else
+					r <= "11111111";
+					g <= "11111111";
+				end if;
+			
+			elsif (switch1 = '0' and switch2 = '1') then 
+				if (row > 350) then
+					g <= "11111111";
+				elsif (column < 213) then
+					b <= "11111111";
+				elsif (column < 427) then
+					r <= "11111111";
+				else
+					r <= "11111111";
+					b <= "11111111";
+				end if;
+			
+			elsif (switch1 = '1' and switch2 = '0') then 
+				if (row > 350) then
+					r <= "11111111";
+					g <= "11111111";
+				elsif (column < 213) then
+					b <= "11111111";
+				elsif (column < 427) then
+					r <= "11111111";
+				else
+					r <= "11111111";
+					g <= "11111111";
+				end if;
+			
+			elsif (switch1 = '1' and switch2 = '1') then 
+				if (row > 350) then
+					g <= "11111111";
+				elsif (column < 213) then
+					g <= "11111111";
+					r <= "11111111";
+					b <= "11111111";
+				elsif (column < 427) then
+					b <= "11111111";
+					r <= "11111111";
+				else
+					g <= "11111111";
+					b <= "11111111";
+				end if;
 			end if;
 		end if;
 	end process;

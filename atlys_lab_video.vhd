@@ -34,6 +34,8 @@ entity atlys_lab_video is
     port ( 
              clk   : in  std_logic; -- 100 MHz
              reset : in  std_logic;
+				 switch1 : in std_logic;
+				 switch2 : in std_logic;
              tmds  : out std_logic_vector(3 downto 0);
              tmdsb : out std_logic_vector(3 downto 0)
          );
@@ -56,6 +58,8 @@ architecture mossing of atlys_lab_video is
     port ( row      : in unsigned(10 downto 0);
            column   : in unsigned(10 downto 0);
            blank    : in std_logic;
+			  switch1 : in std_logic;
+			  switch2 : in std_logic;
            r        : out std_logic_vector(7 downto 0);
            g        : out std_logic_vector(7 downto 0);
            b        : out std_logic_vector(7 downto 0));
@@ -111,6 +115,8 @@ begin
 				row => row_sig,
 				column => column_sig,
 				blank  => blank_sig,
+				switch1 => switch1,
+				switch2 => switch2,
 				r => red,
 				g => green,
 				b => blue
