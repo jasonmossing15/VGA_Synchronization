@@ -70,13 +70,23 @@ count_next <= count_reg + 1 when state_reg = state_next else
 
 The picture below is how the state diagram is implemented:
 
-(HERE WILL BE A PICTURE OF THE STATE DIAGRAM FOR H_SYNC_GEN)
+![H_sync State Diagram](h_sync_state_diagram.jpg)
 
 v_sync_gen is extremely similar to the h_sync_gen, but there are a few differences. The v_sync_gen counts when h_completed is high and the amount of time in each state are the two differences. The time differences are shown in the following state diagram:
 
-(THIS IS WHERE THE V_SYNC_GEN STATE DIAGRAM GOES)
+![V_Sync State Diagram](v_sync_state_diagram.jpg)
 
-*********
+The main changes within the code are the next count logic and adding an if statement in the next state logic, checking to see if `h_completed = '1'`. The new next count logic is:
+
+```
+count_next <= (others => '0') when state_reg /= state_next else
+		count_reg + 1 when h_completed = '1' else
+		count_reg;
+```
+
+This changed causes the count to increment only when h_completed is high.
+
+The last major item implemented was the pixel generator and the switches to control the test patterns. The test pattern is created by changing the red, blue, and green value when blank was '0'. When it is a '1' all of these values are 0's. The test pattern was created by setting the bottom 350 rows as red, top left third as green, middle third as green, and right third as yellow. Yellow was created by setting both red and green as all 1's. The addition of the switches made the test pattern change colors depending on which switches were high or low.
 
 
 ## Test/Debug
